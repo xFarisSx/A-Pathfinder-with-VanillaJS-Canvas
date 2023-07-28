@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pathfinder</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script src="cell.js"></script>
+    <script src="grid.js"></script>
+    <script src="pathfinder.js"></script>
+
+    <script>
+      const startColor = "blue";
+      const endColor = "red";
+      const closedColor = "gray";
+      const obstacleColor = "black";
+      const pathColor = "yellow";
+
+      const cellSize = 50;
+      const width = 10;
+      const height = 10;
+      const ctx = canvas.getContext("2d");
+      canvas.width = (1 + cellSize) * width + 1;
+      canvas.height = (1 + cellSize) * height + 1;
+      const grid = new Grid(width, height, cellSize);
+      const pathfinder = new Pathfinder();
+
+      let startPoint = [];
+      let endPoint = [];
+      let obstaclePoints = [];
+
+      let path = [];
+
+      canvas.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        let point = [
+          Math.floor((e.offsetX / canvas.width) * width),
+          Math.floor((e.offsetY / canvas.height) * height),
+        ];
+
+        obstaclePoints.push([point]);
+        grid.getCell(point).setType("obstacle");
+      });
+
+      canvas.addEventListener("click", function (e) {
+        let point = [
+          Math.floor((e.offsetX / canvas.width) * width),
+          Math.floor((e.offsetY / canvas.height) * height),
+        ];
+        if (startPoint.length == 0 && endPoint.length == 0) {
+          startPoint = point;
+          grid.getCell(startPoint).setType("start");
+        } else if (endPoint.length == 0) {
+          endPoint = point;
+          grid.getCell(endPoint).setType("end");
+
+          path = pathfinder.findPath(startPoint, endPoint);
+          //   console.log(path);
+          //console.log(path);
+        } else {
+        }
+
+        //console.log(startPoint, endPoint);
+      });
+
+      function animate() {
+        grid.update();
+        grid.draw(ctx);
+
+        requestAnimationFrame(animate);
+      }
+      animate();
+    </script>
+  </body>
+</html>
